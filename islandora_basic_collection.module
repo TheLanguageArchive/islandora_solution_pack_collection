@@ -277,23 +277,38 @@ function islandora_basic_collection_islandora_collectionCModel_islandora_view_ob
         list($total, $pids) = call_user_func($backends[$backend]['callable'], $object, $page, $limit);
       }
 
-      $to_return = array(
-        'islandora_basic_collection_display' => array(
-          '#type' => 'markup',
-          '#theme' => 'islandora_objects_subset',
-          '#objects' => $pids,
-          '#total' => $total,
-          '#limit' => $limit,
-          '#pager_element' => $pager_element,
-          '#display' => variable_get('islandora_basic_collection_default_view', 'grid'),
-          '#theme_wrappers' => array('container'),
-          '#attributes' => array(
-            'class' => array(
-              'islandora-solr-collection-display',
+      // modified: if no solr query is issued, hide output. Solr_collection_view module output will be used instead
+      if (strpos(request_uri(), 'f%5B0%5D') === FALSE) {
+        $to_return = array(
+                'islandora_basic_collection_display' => array(
+                        '#attributes' => array(
+                                'class' => array(
+                                        'islandora-solr-collection-display',
+                                                ),
+                                              ),
+                                ),
+                        );
+        }
+      else {
+
+        $to_return = array(
+          'islandora_basic_collection_display' => array(
+            '#type' => 'markup',
+            '#theme' => 'islandora_objects_subset',
+            '#objects' => $pids,
+            '#total' => $total,
+            '#limit' => $limit,
+            '#pager_element' => $pager_element,
+            '#display' => variable_get('islandora_basic_collection_default_view', 'grid'),
+            '#theme_wrappers' => array('container'),
+            '#attributes' => array(
+              'class' => array(
+                'islandora-solr-collection-display',
+              ),
             ),
           ),
-        ),
-      );
+        );
+      }
     }
   }
 
